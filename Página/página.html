@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Modelos de Difusión: Visualización del Proceso</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: #1a2c3e;
+            line-height: 1.4;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Contenedor principal */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Encabezado */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1E3C5C, #2B5F8A);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .sub {
+            font-size: 1.1rem;
+            color: #2c4e6e;
+            max-width: 700px;
+            margin: 0.5rem auto 0;
+            border-top: 2px solid rgba(43, 95, 138, 0.2);
+            display: inline-block;
+            padding-top: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(43, 95, 138, 0.12);
+            backdrop-filter: blur(2px);
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1e4a6e;
+        }
+
+        /* Grid responsive para los 3 GIFs */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0 2rem;
+        }
+
+        /* Tarjetas modernas */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(0px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 28px 40px -16px rgba(0, 35, 55, 0.2);
+            background: white;
+            border-color: rgba(43, 95, 138, 0.3);
+        }
+
+        /* Área del GIF */
+        .gif-container {
+            background: #fefefe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #e9edf2;
+            min-height: 280px;
+            background: radial-gradient(circle at 30% 20%, #ffffff, #fafcff);
+        }
+
+        .gif-container img {
+            max-width: 100%;
+            max-height: 280px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 18px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 6px 12px -8px rgba(0,0,0,0.2);
+        }
+
+        .card-content {
+            padding: 1.5rem 1.6rem 1.8rem;
+            flex: 1;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #0f2f44;
+            letter-spacing: -0.2px;
+        }
+
+        .card-title span {
+            font-size: 1.7rem;
+        }
+
+        .card-sub {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #2b6a94;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid #3e8ab3;
+            padding-left: 0.7rem;
+        }
+
+        .description {
+            color: #2c455b;
+            margin: 0.8rem 0 1rem 0;
+            font-size: 0.95rem;
+            line-height: 1.45;
+        }
+
+        .insight {
+            background: #eef4f9;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #1b4d6e;
+            margin-top: 0.8rem;
+            border-left: 3px solid #5f9fc0;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #5f7d9a;
+            background: #eaf0f5;
+            padding: 1rem 1.5rem;
+            border-radius: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(2px);
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, #cbdbe0, transparent);
+        }
+
+        @media (max-width: 780px) {
+            body {
+                padding: 1rem;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+            .gallery {
+                gap: 1.2rem;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <h1>🌀 Difusión generativa · visualización del entrenamiento</h1>
+        <div class="sub">Proceso forward, evolución de la pérdida y muestreo backward</div>
+        <div class="badge-container">
+            <div class="badge">📈 añadiendo ruido</div>
+            <div class="badge">📉 descenso del MSE</div>
+            <div class="badge">✨ generación paso a paso</div>
+        </div>
+    </div>
+
+    <div class="gallery">
+        <!-- TARJETA 1: Forward diffusion (añadiendo ruido) -->
+        <div class="card">
+            <div class="gif-container">
+                <img src="animacion_forward.gif" 
+                     alt="Animación proceso forward: distribución que se convierte en ruido gaussiano"
+                     loading="lazy"
+                     onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'200\' viewBox=\'0 0 280 200\'%3E%3Crect width=\'280\' height=\'200\' fill=\'%23eef2f5\'/%3E%3Ctext x=\'20\' y=\'110\' font-family=\'monospace\' font-size=\'13\' fill=\'%235f7d9a\'%3EGIF no encontrado%3C/text%3E%3Ctext x=\'20\' y=\'135\' font-family=\'monospace\' font-size=\'12\' fill=\'%237f9bb5\'%3Eanimacion_forward.gif%3C/text%3E%3C/svg%3E';">
+            </div>
+            <div class="card-content">
+                <div class="card-title">
+                    <span>➕➡️🌀</span> Forward · adición de ruido
+                </div>
+                <div class="card-sub">PROCESO DIRECTO (q(xₜ|xₜ₋₁))</div>
+                <div class="description">
+                    Transformación gradual de la distribución real hacia ruido puramente gaussiano. 
+                    Cada paso suma pequeñas cantidades de ruido hasta destruir por completo la estructura de los datos.
+                    El gráfico animado muestra cómo la densidad se ensancha y se desplaza hacia una prior simple.
+                </div>
+                <div class="insight">
+                    📐 Eje X: valor de la variable · Eje Y: densidad · La curva se aplana y se vuelve ruido.
+                </div>
+            </div>
+        </div>
+
+        <!-- TARJETA 2: Entrenamiento / evolución de la distribución y pérdida -->
+        <div class="card">
+            <div class="gif-container">
+                <img src="entrenamiento_difusion.gif" 
+                     alt="Entrenamiento del modelo de difusión: evolución de la distribución generada y pérdida MSE por época"
+                     loading="lazy"
+                     onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'200\' viewBox=\'0 0 280 200\'%3E%3Crect width=\'280\' height=\'200\' fill=\'%23eef2f5\'/%3E%3Ctext x=\'20\' y=\'110\' font-family=\'monospace\' font-size=\'13\' fill=\'%235f7d9a\'%3EGIF no encontrado%3C/text%3E%3Ctext x=\'20\' y=\'135\' font-family=\'monospace\' font-size=\'12\' fill=\'%237f9bb5\'%3Eentrenamiento_difusion.gif%3C/text%3E%3C/svg%3E';">
+            </div>
+            <div class="card-content">
+                <div class="card-title">
+                    <span>📉🧠⚡</span> Entrenamiento · pérdida y distribución
+                </div>
+                <div class="card-sub">EVOLUCIÓN DURANTE LAS ÉPOCAS (MSE)</div>
+                <div class="description">
+                    El proceso de aprendizaje del modelo inverso. A medida que avanzan las épocas,
+                    la pérdida (MSE) disminuye — en la animación se observa la distribución generada
+                    aproximándose cada vez más a la real. La primera época muestra pérdida ~0.8535
+                    y conforme el modelo aprende las transiciones backward, el error se reduce.
+                </div>
+                <div class="insight">
+                    📊 Gráfico superior: pérdida vs época · Inferior: distribución generada (verde/azul)
+                    vs distribución real. El ajuste progresivo indica convergencia.
+                </div>
+            </div>
+        </div>
+
+        <!-- TARJETA 3: Backward (proceso de denoising / generación) -->
+        <div class="card">
+            <div class="gif-container">
+                <img src="proceso_backward.gif" 
+                     alt="Proceso backward del modelo de difusión: denoising paso a paso desde ruido puro hacia muestra realista"
+                     loading="lazy"
+                     onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'280\' height=\'200\' viewBox=\'0 0 280 200\'%3E%3Crect width=\'280\' height=\'200\' fill=\'%23eef2f5\'/%3E%3Ctext x=\'20\' y=\'110\' font-family=\'monospace\' font-size=\'13\' fill=\'%235f7d9a\'%3EGIF no encontrado%3C/text%3E%3Ctext x=\'20\' y=\'135\' font-family=\'monospace\' font-size=\'12\' fill=\'%237f9bb5\'%3Eproceso_backward.gif%3C/text%3E%3C/svg%3E';">
+            </div>
+            <div class="card-content">
+                <div class="card-title">
+                    <span>🔄✨🎨</span> Backward · generación (denoising)
+                </div>
+                <div class="card-sub">MUESTREO REVERSO — de ruido a datos reales</div>
+                <div class="description">
+                    El modelo entrenado parte de ruido puro (t ≈ T) y aplica repetidamente la red neuronal
+                    para eliminar el ruido. La animación muestra cómo la densidad se recompone gradualmente
+                    hasta recuperar la distribución original. En el GIF se aprecian pasos como t = 199 (progreso ~0.5%)
+                    hasta la forma final. La leyenda "Real" indica la distribución objetivo.
+                </div>
+                <div class="insight">
+                    🧩 El proceso backward aprende a revertir la cadena de Markov del forward.
+                    Cada iteración afina los detalles hasta generar muestras coherentes.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ⚙️ Visualización de animaciones generadas durante el entrenamiento de un modelo difusivo.
+        Los archivos <strong>animacion_forward.gif</strong>, <strong>entrenamiento_difusion.gif</strong> 
+        y <strong>proceso_backward.gif</strong> deben estar en la misma carpeta que este archivo HTML.
+        <br><br>
+        <span style="opacity:0.7;">📌 Explicación técnica: el forward añade ruido (distribución gaussiana), 
+        el entrenamiento reduce el error de reconstrucción y el backward muestra la síntesis.</span>
+    </div>
+</div>
+</body>
+</html>
